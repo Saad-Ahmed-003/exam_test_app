@@ -1,20 +1,17 @@
 import React, { useState } from "react";
+import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle";
 
 const AddQuestion = () => {
-  const [options, setOptions] = useState(""); // State to store options
-  const [optionList, setOptionList] = useState([]); // State to store list of options
+  const [options, setOptions] = useState("");
+  const [optionList, setOptionList] = useState([]);
+  const [correctAnswer, setCorrectAnswer] = useState("");
 
   const handleAddOption = () => {
     if (options.trim() !== "" && optionList.length < 4) {
-      const optionPlaceholder =
-        String.fromCharCode(97 + optionList.length) + ".";
-      setOptionList([
-        ...optionList,
-        { text: options.trim(), placeholder: optionPlaceholder },
-      ]);
-      setOptions(""); // Clear the input field after adding an option
+      setOptionList([...optionList, options.trim()]);
+      setOptions("");
     }
   };
 
@@ -25,10 +22,41 @@ const AddQuestion = () => {
     }
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    // Perform necessary actions here, e.g., sending data to a server
+  const handleClear = () => {
+    setOptions("");
+    setOptionList([]);
+    setCorrectAnswer("");
   };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+  
+    // Create the JSON object
+    const questionData = {
+      correct_answer: correctAnswer,
+      difficulty: document.getElementById("difficulty").value,
+      options: optionList,
+      question: document.getElementById("questionText").value,
+      topic: document.getElementById("programmingLanguage").value,
+    };
+  
+    try {
+      // Make the POST request using Axios
+      const response = await axios.post("http://localhost:5000/addQuestions", questionData);
+      console.log("Question added:", response.data);
+      
+      // Reset form values after successful submission
+      setOptions("");
+      setOptionList([]);
+      setCorrectAnswer("");
+      document.getElementById("programmingLanguage").selectedIndex = 0;
+      document.getElementById("difficulty").selectedIndex = 0;
+      document.getElementById("questionText").value = "";
+    } catch (error) {
+      console.error("Error adding question:", error);
+    }
+  };
+  
 
   return (
     <div className="container mt-3">
@@ -92,13 +120,10 @@ const AddQuestion = () => {
                 value={options}
                 onChange={(e) => setOptions(e.target.value)}
                 onKeyPress={handleOptionKeyPress}
-                required
               />
               <ul className="list-unstyled">
                 {optionList.map((option, index) => (
-                  <li key={index}>
-                    {option.placeholder} {option.text}
-                  </li>
+                  <li key={index}>{option}</li>
                 ))}
               </ul>
             </div>
@@ -107,14 +132,28 @@ const AddQuestion = () => {
               <label htmlFor="correctAnswer" className="form-label">
                 Correct Answer
               </label>
-              <input
-                type="text"
-                className="form-control"
+              <select
+                className="form-select"
                 id="correctAnswer"
-                required=""
-              />
+                value={correctAnswer}
+                onChange={(e) => setCorrectAnswer(e.target.value)}
+                required
+              >
+                <option value="" disabled>
+                  Select correct answer
+                </option>
+                {optionList.map((option, index) => (
+                  <option key={index} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
             </div>
-            <button type="button" className="btn btn-secondary me-2">
+            <button
+              type="button"
+              className="btn btn-secondary me-2"
+              onClick={handleClear}
+            >
               Clear
             </button>
             <button type="submit" className="btn btn-primary">

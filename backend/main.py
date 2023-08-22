@@ -6,7 +6,7 @@ CORS(app)
 
 
 @app.route('/questions', methods=["GET"])
-def get_questions():
+def questions():
     data = {
         "questions": [
             {
@@ -273,6 +273,13 @@ def get_questions():
     }
 
     return jsonify(data)
+
+
+@app.route('/addQuestions', methods=["POST"])
+def get_questions():
+    data = request.json
+    print(data)
+    return jsonify({"message":"opration succbus"})
 
 
 if "__main__" == __name__:
