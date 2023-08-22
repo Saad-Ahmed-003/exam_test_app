@@ -1,7 +1,8 @@
-import logo from './logo.svg';
 import './App.css';
 
 import Header from './components/header';
+import Add_question from './components/add_question';
+import Login from './components/loogin';
 import Question from './components/questions';
 
 function App() {
@@ -9,7 +10,9 @@ function App() {
     <div className=''>
       <Header />
       <div className='container'>
-        <Question/>
+        <Add_question />
+        {/* <Login /> */}
+        {/* <Question/> */}
       </div>
     </div>
   );
