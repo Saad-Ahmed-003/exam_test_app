@@ -28,9 +28,14 @@ const AddQuestion = () => {
     setCorrectAnswer("");
   };
 
+  const handleRemoveOption = (index) => {
+    const updatedOptions = optionList.filter((_, i) => i !== index);
+    setOptionList(updatedOptions);
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
-  
+
     // Create the JSON object
     const questionData = {
       correct_answer: correctAnswer,
@@ -39,12 +44,15 @@ const AddQuestion = () => {
       question: document.getElementById("questionText").value,
       topic: document.getElementById("programmingLanguage").value,
     };
-  
+
     try {
       // Make the POST request using Axios
-      const response = await axios.post("http://localhost:5000/addQuestions", questionData);
+      const response = await axios.post(
+        "http://localhost:5000/addQuestions",
+        questionData
+      );
       console.log("Question added:", response.data);
-      
+
       // Reset form values after successful submission
       setOptions("");
       setOptionList([]);
@@ -56,14 +64,13 @@ const AddQuestion = () => {
       console.error("Error adding question:", error);
     }
   };
-  
 
   return (
     <div className="container mt-3">
       <div className="row justify-content-center">
         <div className="col-lg-6">
           <form className="border border-3 p-4 rounded" onSubmit={handleSubmit}>
-            <h2 className="mb-4">Add Question</h2>
+            <h2 className="mb-4"></h2>
             <div className="mb-3">
               <label htmlFor="programmingLanguage" className="form-label">
                 Programming Language
@@ -112,18 +119,39 @@ const AddQuestion = () => {
               <label htmlFor="options" className="form-label">
                 Options
               </label>
-              <input
-                type="text"
-                className="form-control"
-                id="options"
-                placeholder="Enter options separated by commas"
-                value={options}
-                onChange={(e) => setOptions(e.target.value)}
-                onKeyPress={handleOptionKeyPress}
-              />
+              <div className="input-group mb-3">
+                <input
+                  type="text"
+                  className="form-control"
+                  id="options"
+                  placeholder="Enter options"
+                  value={options}
+                  onChange={(e) => setOptions(e.target.value)}
+                  onKeyPress={handleOptionKeyPress}
+                />
+                <button
+                  className="btn btn-outline-secondary"
+                  type="button"
+                  onClick={handleAddOption}
+                >
+                  Add
+                </button>
+              </div>
               <ul className="list-unstyled">
                 {optionList.map((option, index) => (
-                  <li key={index}>{option}</li>
+                  <li
+                    key={index}
+                    className="d-flex justify-content-between align-items-center"
+                  >
+                    {option}
+                    <button
+                      className="btn btn-sm btn-danger"
+                      type="button"
+                      onClick={() => handleRemoveOption(index)}
+                    >
+                      Remove
+                    </button>
+                  </li>
                 ))}
               </ul>
             </div>
